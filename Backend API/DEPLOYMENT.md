@@ -23,7 +23,7 @@ flowchart TD
     subgraph VPS_Server ["Server VPS (:5376)"]
         D --> E["tar -xzf release.tar.gz"]
         E --> F["npm ci --omit=dev (Production Only)"]
-        F --> G["pm2 reload idlix-backend-api"]
+        F --> G["pm2 reload iskanflix-backend-api"]
         G --> H["Health Check (:5376/health)"]
     end
 ```
@@ -81,7 +81,7 @@ sudo apt install -y \
 ### Langkah 2.3: Siapkan Folder Deployment di VPS
 Cukup buat satu folder kosong untuk meletakkan rilis backend:
 ```bash
-mkdir -p ~/idlix-backend
+mkdir -p ~/iskanflix-backend
 ```
 *(Tidak perlu `git clone` di folder ini, karena GitHub Actions yang akan mengirim rilis siap pakai ke folder ini).*
 
@@ -119,7 +119,7 @@ Buka repositori GitHub Anda di browser:
 | `VPS_USER` | Username SSH VPS Anda | `ubuntu` atau `root` |
 | `VPS_PASSWORD` | Password user VPS Anda | `password_vps_anda` |
 | `VPS_PORT` | Port SSH | `22` |
-| `VPS_TARGET_DIR` | Path folder di VPS yang dibuat di langkah 2.3 | `/home/ubuntu/idlix-backend` |
+| `VPS_TARGET_DIR` | Path folder di VPS yang dibuat di langkah 2.3 | `/home/ubuntu/iskanflix-backend` |
 
 ---
 
@@ -146,9 +146,9 @@ Saat Anda melakukan `git push origin main`:
 
 Kapan pun Anda ingin memantau backend di VPS:
 - **Cek Status**: `pm2 list`
-- **Lihat Log Real-time**: `pm2 logs idlix-backend-api`
+- **Lihat Log Real-time**: `pm2 logs iskanflix-backend-api`
 - **Monitor RAM & CPU**: `pm2 monit`
-- **Restart Manual**: `pm2 restart idlix-backend-api`
+- **Restart Manual**: `pm2 restart iskanflix-backend-api`
 
 ---
 

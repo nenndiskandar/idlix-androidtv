@@ -8,7 +8,7 @@ Panduan ini ditujukan bagi Anda yang ingin memasang (**install**) aplikasi IDLIX
 
 Sebelum memulai, siapkan hal-hal berikut:
 1. **Perangkat TV**: Android TV, Google TV, atau TV Box (seperti Mi TV Stick, Chromecast with Google TV, Xiaomi Box, RealMe TV Stick, Aqua, Coocaa, TCL, dsb.).
-2. **File APK**: File mentah aplikasi IDLIX TV (`app-release.apk` atau `idlix-tv.apk`).
+2. **File APK**: File mentah aplikasi iskanFlix TV (`app-release.apk` atau `iskanflix-tv.apk`).
 3. **Koneksi Wi-Fi**: Pastikan TV terhubung ke jaringan Wi-Fi rumah Anda.
 
 ---

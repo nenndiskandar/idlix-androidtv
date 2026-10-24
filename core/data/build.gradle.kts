@@ -15,7 +15,7 @@ val localProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.idlix.data"
+    namespace = "com.iskanflix.data"
     compileSdk = 35
 
     defaultConfig {

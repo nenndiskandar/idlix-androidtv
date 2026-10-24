@@ -1,6 +1,6 @@
-# Idlix TV - Backend API Scraper & Proxy Service
+# IskanFlix TV - Backend API Scraper & Proxy Service
 
-High-performance scraper, cache, and Cloudflare bypass API for **Idlix for TV**.
+High-performance scraper, cache, and Cloudflare bypass API for **IskanFlix for TV**.
 By running this backend service, the Android TV app does not need any Android `WebView` or Chromium processes, running 100% native Kotlin with minimal memory footprint.
 
 ## Fitur Utama

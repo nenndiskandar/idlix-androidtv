@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IDLIX TV</string>
+    <string name="app_name">iskanFlix TV</string>
     <string name="home">Beranda</string>
     <string name="movies">Film</string>
     <string name="series">Serial TV</string>
@@ -59,7 +59,7 @@
     <string name="loading_error">Terjadi kesalahan saat memuat data</string>
     <string name="audio_and_subtitles">Audio &amp; Subtitle</string>
     <string name="subtitles_off">Nonaktifkan Subtitle (Mati)</string>
-    <string name="default_subtitle">Bawaan (IDLIX)</string>
+    <string name="default_subtitle">Bawaan (iskanFlix)</string>
     <string name="subdl_subtitles_header">Pilihan Subtitle dari SubDL.com</string>
     <string name="search_subdl">Cari Subtitle di SubDL</string>
     <string name="searching_subdl">Mencari di SubDL…</string>

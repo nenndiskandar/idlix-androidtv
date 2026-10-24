@@ -1,7 +1,7 @@
 # IDLIX: Android TV & Android Mobile 🎬📺📱
 
 <p align="center">
-  <img src="https://cdn.abdilah.id/uploads/com.idlix.tv_and_com.idlix.mobile-preview.png">
+  <img src="https://cdn.abdilah.id/uploads/com.iskanflix.tv_and_com.iskanflix.mobile-preview.png">
 </p>
 
 A modern, high-performance, **100% native Android streaming platform** for movies and TV series from IDLIX with multi-platform support (Android TV & Android Mobile) built using a unified **Multi-Module Architecture**.
@@ -67,18 +67,18 @@ Project ini terbagi menjadi modul-modul independen yang saling melengkapi:
 ## 📁 Struktur Direktori Multi-Module (Project Structure)
 
 ```
-Idlix for TV/
+IskanFlix for TV/
 ├── core/
 │   └── data/                            # [Shared Library] Model, API Retrofit, Repository & DB
-│       ├── src/main/java/com/idlix/data/
-│       │   ├── api/                     # ApiClient (Universal), IdlixApiService, MajorplayApiService
+│       ├── src/main/java/com/iskanflix/data/
+│       │   ├── api/                     # ApiClient (Universal), IskanFlixApiService, MajorplayApiService
 │       │   ├── local/                   # WatchHistoryStore (penyimpanan riwayat tontonan)
 │       │   ├── model/                   # MovieItem, SeriesItem, Subdl, Serializers
-│       │   └── repository/              # IdlixRepository & SubdlRepository
+│       │   └── repository/              # IskanFlixRepository & SubdlRepository
 │       └── build.gradle.kts
 │
 ├── app-tv/                              # [Application] Modul Khusus Android TV / Google TV
-│   ├── src/main/java/com/idlix/tv/
+│   ├── src/main/java/com/iskanflix/tv/
 │   │   ├── ui/
 │   │   │   ├── components/              # TvNavDrawer, TvMovieCard, TvHeroBillboard, dll.
 │   │   │   ├── navigation/              # TV NavHost & routes
@@ -88,7 +88,7 @@ Idlix for TV/
 │   └── build.gradle.kts
 │
 ├── app-mobile/                          # [Application] Modul Khusus Smartphone & Tablet
-│   ├── src/main/java/com/idlix/mobile/
+│   ├── src/main/java/com/iskanflix/mobile/
 │   │   ├── ui/
 │   │   │   ├── components/              # MobileMovieCard, HeroBannerPager, FilterChips, ContinueWatching
 │   │   │   ├── navigation/              # Bottom Navigation Bar, NavHost, MainScaffold
@@ -177,7 +177,7 @@ adb devices
 adb -s "adb-DELFOVPBBQPFDIA6-W6Rq2R._adb-tls-connect._tcp" install -r app-mobile/build/outputs/apk/debug/app-mobile-debug.apk
 
 # Jalankan aplikasi mobile
-adb -s "adb-DELFOVPBBQPFDIA6-W6Rq2R._adb-tls-connect._tcp" shell am start -n com.idlix.mobile.debug/com.idlix.mobile.MainActivity
+adb -s "adb-DELFOVPBBQPFDIA6-W6Rq2R._adb-tls-connect._tcp" shell am start -n com.iskanflix.mobile.debug/com.iskanflix.mobile.MainActivity
 ```
 
 > **Catatan untuk Perangkat Xiaomi / MIUI / HyperOS**:
@@ -187,11 +187,11 @@ adb -s "adb-DELFOVPBBQPFDIA6-W6Rq2R._adb-tls-connect._tcp" shell am start -n com
 
 ## Download Release Apk
 
-Look at this [page](https://github.com/samdgea/idlix-androidtv/releases).
+Look at this [page](https://github.com/samdgea/iskanflix-androidtv/releases).
 
 ---
 
 ## 🔒 Keamanan & Lisensi
 
-* File sensitif seperti `local.properties`, sertifikat signing keystore (`*.jks`), dan credential environment dilindungi di [`.gitignore`](file:///Users/abdi/Documents/Personal%20Workspace/Idlix%20for%20TV/.gitignore).
+* File sensitif seperti `local.properties`, sertifikat signing keystore (`*.jks`), dan credential environment dilindungi di [`.gitignore`](file:///Users/abdi/Documents/Personal%20Workspace/IskanFlix%20for%20TV/.gitignore).
 * Proyek ini dibuat untuk keperluan edukasi dan riset arsitektur multi-module Android Native (TV & Mobile) serta streaming HLS.

@@ -1,4 +1,4 @@
-# Arsitektur Multi-Module: Penyatuan Idlix TV & Idlix Mobile dalam Satu Project
+# Arsitektur Multi-Module: Penyatuan IskanFlix TV & IskanFlix Mobile dalam Satu Project
 
 Dokumen ini merinci rencana transformasi arsitektur dari *Single Module* (`:app`) menjadi **Multi-Module Project** yang menampung aplikasi **Android TV** dan **Android Mobile** secara berdampingan tanpa saling mengganggu, dengan berbagi logika data (*shared core*).
 
@@ -6,14 +6,14 @@ Dokumen ini merinci rencana transformasi arsitektur dari *Single Module* (`:app`
 
 ## 1. Mengapa Multi-Module?
 
-1. **Zero Code Duplication**: Logika koneksi API backend ([`ApiClient`](file:///Users/abdi/Documents/Personal%20Workspace/Idlix%20for%20TV/app/src/main/java/com/idlix/tv/data/api/ApiClient.kt), [`IdlixApiService`](file:///Users/abdi/Documents/Personal%20Workspace/Idlix%20for%20TV/app/src/main/java/com/idlix/tv/data/api/IdlixApiService.kt)), data model ([`Movie`](file:///Users/abdi/Documents/Personal%20Workspace/Idlix%20for%20TV/app/src/main/java/com/idlix/tv/data/model/Movie.kt), [`Series`](file:///Users/abdi/Documents/Personal%20Workspace/Idlix%20for%20TV/app/src/main/java/com/idlix/tv/data/model/Series.kt), [`PlayInfo`](file:///Users/abdi/Documents/Personal%20Workspace/Idlix%20for%20TV/app/src/main/java/com/idlix/tv/data/model/PlayInfo.kt)), deserializer, dan repository dikelola di satu tempat.
+1. **Zero Code Duplication**: Logika koneksi API backend ([`ApiClient`](file:///Users/abdi/Documents/Personal%20Workspace/IskanFlix%20for%20TV/app/src/main/java/com/iskanflix/tv/data/api/ApiClient.kt), [`IskanFlixApiService`](file:///Users/abdi/Documents/Personal%20Workspace/IskanFlix%20for%20TV/app/src/main/java/com/iskanflix/tv/data/api/IskanFlixApiService.kt)), data model ([`Movie`](file:///Users/abdi/Documents/Personal%20Workspace/IskanFlix%20for%20TV/app/src/main/java/com/iskanflix/tv/data/model/Movie.kt), [`Series`](file:///Users/abdi/Documents/Personal%20Workspace/IskanFlix%20for%20TV/app/src/main/java/com/iskanflix/tv/data/model/Series.kt), [`PlayInfo`](file:///Users/abdi/Documents/Personal%20Workspace/IskanFlix%20for%20TV/app/src/main/java/com/iskanflix/tv/data/model/PlayInfo.kt)), deserializer, dan repository dikelola di satu tempat.
 2. **Isolasi Dependensi UI**:
    - Modul TV menggunakan library `androidx.tv:tv-material` & `tv-foundation`.
    - Modul Mobile menggunakan library `androidx.compose.material3:material3`.
    - Keduanya tidak akan saling tumpang tindih (*dependency conflict*).
 3. **Build Target Independen**:
-   - `./gradlew :app-tv:assembleRelease` -> Menghasilkan APK Android TV (`com.idlix.tv`) untuk Google TV Play Store.
-   - `./gradlew :app-mobile:assembleRelease` -> Menghasilkan APK Smartphone/Tablet (`com.idlix.mobile`) untuk Mobile Play Store.
+   - `./gradlew :app-tv:assembleRelease` -> Menghasilkan APK Android TV (`com.iskanflix.tv`) untuk Google TV Play Store.
+   - `./gradlew :app-mobile:assembleRelease` -> Menghasilkan APK Smartphone/Tablet (`com.iskanflix.mobile`) untuk Mobile Play Store.
 4. **Maintenance Satu Pintu**: Update scraping/streaming API langsung berefek ke TV dan Mobile sekaligus.
 
 ---
@@ -27,8 +27,8 @@ flowchart TD
     end
 
     subgraph AppLayers ["Application Modules (Binary Outputs)"]
-        APP_TV[":app-tv<br/>com.idlix.tv<br/>(TV Compose, D-Pad Remote, 10-ft UI)"]
-        APP_MOBILE[":app-mobile<br/>com.idlix.mobile<br/>(Material 3, Touch, Inline Player, PiP)"]
+        APP_TV[":app-tv<br/>com.iskanflix.tv<br/>(TV Compose, D-Pad Remote, 10-ft UI)"]
+        APP_MOBILE[":app-mobile<br/>com.iskanflix.mobile<br/>(Material 3, Touch, Inline Player, PiP)"]
     end
 
     CORE_DATA -->|implementation| APP_TV
@@ -44,13 +44,13 @@ flowchart TD
 * **Dependensi UI**: **Tidak ada** (murni data, network, & caching).
 * **Komponen yang dipindahkan ke modul ini**:
   - `data/model/*` (`Movie.kt`, `Series.kt`, `PlayInfo.kt`, `Subdl.kt`, `FlexibleSerializers.kt`, dll).
-  - `data/api/*` (`ApiClient.kt`, `IdlixApiService.kt`, `MajorplayApiService.kt`).
-  - `data/repository/*` (`IdlixRepository.kt`, `SubdlRepository.kt`).
+  - `data/api/*` (`ApiClient.kt`, `IskanFlixApiService.kt`, `MajorplayApiService.kt`).
+  - `data/repository/*` (`IskanFlixRepository.kt`, `SubdlRepository.kt`).
   - `data/local/*` (`WatchHistoryStore.kt`).
 
 ### B. Modul `:app-tv` (Android Application)
 * **Plugin**: `com.android.application`, `org.jetbrains.kotlin.plugin.compose`
-* **Application ID**: `com.idlix.tv`
+* **Application ID**: `com.iskanflix.tv`
 * **Dependensi**:
   - `implementation(project(":core:data"))`
   - `androidx.tv.foundation`, `androidx.tv.material`
@@ -59,7 +59,7 @@ flowchart TD
 
 ### C. Modul `:app-mobile` (Android Application)
 * **Plugin**: `com.android.application`, `org.jetbrains.kotlin.plugin.compose`
-* **Application ID**: `com.idlix.mobile`
+* **Application ID**: `com.iskanflix.mobile`
 * **Dependensi**:
   - `implementation(project(":core:data"))`
   - `androidx.compose.material3:material3`
@@ -113,12 +113,12 @@ gantt
 
 * **Sub-Tugas 1.1**: Daftarkan plugin `com.android.library` di `gradle/libs.versions.toml`.
 * **Sub-Tugas 1.2**: Buat direktori `core/data` dan file `core/data/build.gradle.kts`.
-  - Tetapkan `namespace = "com.idlix.core.data"`.
+  - Tetapkan `namespace = "com.iskanflix.core.data"`.
   - Pasang dependencies: Retrofit, KotlinX Serialization, OkHttp, Coroutines.
 * **Sub-Tugas 1.3**: Pindahkan file-file berikut dari modul aplikasi ke `core/data/src/main/java/`:
   - `data/model/*` (`Movie.kt`, `Series.kt`, `PlayInfo.kt`, `Subdl.kt`, `FlexibleSerializers.kt`, `WatchHistoryItem.kt`).
-  - `data/api/*` (`ApiClient.kt`, `IdlixApiService.kt`, `MajorplayApiService.kt`).
-  - `data/repository/*` (`IdlixRepository.kt`, `SubdlRepository.kt`).
+  - `data/api/*` (`ApiClient.kt`, `IskanFlixApiService.kt`, `MajorplayApiService.kt`).
+  - `data/repository/*` (`IskanFlixRepository.kt`, `SubdlRepository.kt`).
   - `data/local/*` (`WatchHistoryStore.kt`).
 * **Sub-Tugas 1.4**: Daftarkan `:core:data` di `settings.gradle.kts` (`include(":core:data")`).
 * **Kriteria Selesai (DoD)**: Perintah `./gradlew :core:data:assemble` berhasil tanpa error.
@@ -132,12 +132,12 @@ gantt
   ```kotlin
   include(":app-tv")
   ```
-* **Sub-Tugas 2.2**: Bersihkan folder `app-tv/src/main/java/com/idlix/tv/data/` (karena isinya sudah berada di `:core:data`).
+* **Sub-Tugas 2.2**: Bersihkan folder `app-tv/src/main/java/com/iskanflix/tv/data/` (karena isinya sudah berada di `:core:data`).
 * **Sub-Tugas 2.3**: Tambahkan dependensi di `app-tv/build.gradle.kts`:
   ```kotlin
   implementation(project(":core:data"))
   ```
-* **Sub-Tugas 2.4**: Perbarui import di seluruh UI TV (`HomeScreen`, `DetailScreen`, `PlayerScreen`, dll) jika path package disesuaikan ke `com.idlix.core.data.*`.
+* **Sub-Tugas 2.4**: Perbarui import di seluruh UI TV (`HomeScreen`, `DetailScreen`, `PlayerScreen`, dll) jika path package disesuaikan ke `com.iskanflix.core.data.*`.
 * **Sub-Tugas 2.5**: Uji build TV secara penuh:
   ```bash
   ./gradlew :app-tv:assembleDebug
@@ -151,7 +151,7 @@ gantt
 
 * **Sub-Tugas 3.1**: Daftarkan `:app-mobile` di `settings.gradle.kts` dan buat direktori `app-mobile/`.
 * **Sub-Tugas 3.2**: Buat `app-mobile/build.gradle.kts`:
-  - `applicationId = "com.idlix.mobile"`
+  - `applicationId = "com.iskanflix.mobile"`
   - Pasang library: Compose BOM, Compose Material 3, Navigation Compose, Media3 ExoPlayer, Coil Compose, dan `project(":core:data")`.
   - **Penting**: Tidak memasukkan library `androidx.tv.*`.
 * **Sub-Tugas 3.3**: Konfigurasi `app-mobile/src/main/AndroidManifest.xml`:
@@ -159,11 +159,11 @@ gantt
   - Hapus Leanback category / TV banners.
   - Aktifkan flag `android:supportsPictureInPicture="true"`.
   - Handle orientasi: `configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"`.
-* **Sub-Tugas 3.4**: Setup `IdlixMobileApp.kt` dan `MainActivity.kt`:
+* **Sub-Tugas 3.4**: Setup `IskanFlixApp.kt` dan `MainActivity.kt`:
   - Panggil `enableEdgeToEdge()` untuk tampilan layar penuh modern tanpa black bar di status bar.
 * **Sub-Tugas 3.5**: Setup Desain Sistem Material 3 (`ui/theme/`):
-  - Palet warna dark mode streaming (Background `#0E0E12`, Surface `#18181E`, Primary Merah Idlix `#E50914`, Accent `#00ADB5`).
-* **Kriteria Selesai (DoD)**: Modul `:app-mobile` dapat di-build dan menampilkan layar kosong bertema Idlix di smartphone.
+  - Palet warna dark mode streaming (Background `#0E0E12`, Surface `#18181E`, Primary Merah IskanFlix `#E50914`, Accent `#00ADB5`).
+* **Kriteria Selesai (DoD)**: Modul `:app-mobile` dapat di-build dan menampilkan layar kosong bertema IskanFlix di smartphone.
 
 ---
 
@@ -277,7 +277,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 
 ### 2. `settings.gradle.kts`
 ```kotlin
-rootProject.name = "Idlix"
+rootProject.name = "IskanFlix"
 
 include(":core:data")
 include(":app-tv")
@@ -293,7 +293,7 @@ plugins {
 }
 
 android {
-    namespace = "com.idlix.core.data"
+    namespace = "com.iskanflix.core.data"
     compileSdk = 35
 
     defaultConfig {
@@ -333,7 +333,7 @@ plugins {
 }
 
 android {
-    namespace = "com.idlix.tv"
+    namespace = "com.iskanflix.tv"
     compileSdk = 35
     // ... konfigurasi signing & release TV ...
 }
@@ -365,11 +365,11 @@ plugins {
 }
 
 android {
-    namespace = "com.idlix.mobile"
+    namespace = "com.iskanflix.mobile"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.idlix.mobile"
+        applicationId = "com.iskanflix.mobile"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -411,12 +411,12 @@ dependencies {
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".IdlixApp"
+        android:name=".IskanFlixApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IdlixMobile"
+        android:theme="@style/Theme.IskanFlixTV"
         android:usesCleartextTraffic="true">
 
         <activity

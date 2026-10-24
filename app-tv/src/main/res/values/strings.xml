@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IDLIX TV</string>
+    <string name="app_name">iskanFlix TV</string>
     <string name="home">Home</string>
     <string name="movies">Movies</string>
     <string name="series">TV Series</string>
@@ -59,7 +59,7 @@
     <string name="loading_error">An error occurred while loading data</string>
     <string name="audio_and_subtitles">Audio &amp; Subtitles</string>
     <string name="subtitles_off">Subtitles Off</string>
-    <string name="default_subtitle">Default (IDLIX)</string>
+    <string name="default_subtitle">Default (iskanFlix)</string>
     <string name="subdl_subtitles_header">Subtitles from SubDL.com</string>
     <string name="search_subdl">Search SubDL Subtitles</string>
     <string name="searching_subdl">Searching SubDL…</string>

@@ -10,14 +10,14 @@
         android:required="true" />
 
     <application
-        android:name=".IdlixMobileApp"
+        android:name=".IskanFlixApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IdlixMobile"
+        android:theme="@style/Theme.IskanFlixTV"
         android:usesCleartextTraffic="true">
 
         <activity

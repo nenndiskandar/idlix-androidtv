@@ -1,7 +1,7 @@
 {
-  "name": "idlix-backend-api",
+  "name": "iskanflix-backend-api",
   "version": "1.0.0",
-  "description": "High-performance headless scraper and proxy API for Idlix for TV",
+  "description": "High-performance headless scraper and proxy API for IskanFlix for TV",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",

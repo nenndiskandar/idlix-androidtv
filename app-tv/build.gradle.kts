@@ -16,11 +16,11 @@ val localProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.idlix.tv"
+    namespace = "com.iskanflix.tv"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.idlix.tv"
+        applicationId = "com.iskanflix.tv"
         minSdk = 26
         targetSdk = 35
         versionCode = 4

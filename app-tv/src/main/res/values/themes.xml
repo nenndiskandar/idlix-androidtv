@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.IdlixTV" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.IskanFlixTV" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/netflix_black</item>
         <item name="android:colorBackground">@color/netflix_black</item>
         <item name="android:colorPrimary">@color/netflix_red</item>
