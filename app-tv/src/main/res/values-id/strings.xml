@@ -71,6 +71,9 @@
     <string name="settings">Pengaturan</string>
     <string name="settings_desc">Konfigurasi Backend API dan Third-Party Subtitle langsung dari remote TV Anda.</string>
     <string name="backend_api_header">Server Backend API</string>
+    <string name="backend_url_locked">Server backend dikelola oleh pengelola aplikasi.</string>
+    <string name="subdl_key_locked">API key subtitle dikelola oleh pengelola aplikasi.</string>
+    <string name="settings_locked_notice">Konfigurasi server sudah dikunci pada build ini dan tidak bisa diubah.</string>
     <string name="active_backend_url">URL Aktif: %s</string>
     <string name="test_backend_connection">Uji Koneksi Backend</string>
     <string name="testing">Menguji...</string>

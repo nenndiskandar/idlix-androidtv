@@ -57,6 +57,7 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.Text
 import com.iskanflix.tv.BuildConfig
+import com.iskanflix.data.BuildConfig as DataBuildConfig
 import com.iskanflix.tv.R
 import com.iskanflix.data.api.ApiClient
 import com.iskanflix.data.model.SubdlResponse
@@ -80,6 +81,10 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
+
+    // Release builds pin the backend URL and SubDL key: the editable fields are
+    // replaced by a read-only summary so the shipped APK has no exposed config.
+    val settingsLocked = DataBuildConfig.SETTINGS_LOCKED
 
     // --- Backend API State ---
     var currentActiveUrl by remember { mutableStateOf(ApiClient.getBaseUrl()) }
@@ -242,55 +247,61 @@ fun SettingsScreen(
 
             // Current URL Info
             Text(
-                text = stringResource(R.string.active_backend_url, currentActiveUrl),
+                text = if (settingsLocked) {
+                    context.getString(R.string.backend_url_locked)
+                } else {
+                    stringResource(R.string.active_backend_url, currentActiveUrl)
+                },
                 color = NetflixLightGray,
                 fontSize = 12.sp
             )
 
-            // Input Field URL
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .background(NetflixBlack, RoundedCornerShape(6.dp))
-                    .border(
-                        width = if (isUrlInputFocused) 2.dp else 1.dp,
-                        color = if (isUrlInputFocused) NetflixWhite else NetflixDarkCard,
-                        shape = RoundedCornerShape(6.dp)
-                    )
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BasicTextField(
-                    value = inputUrl,
-                    onValueChange = {
-                        inputUrl = it
-                        saveMessage = null
-                        backendTestStatus = null
-                    },
-                    textStyle = TextStyle(
-                        color = NetflixWhite,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    cursorBrush = SolidColor(NetflixRed),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                    singleLine = true,
+            // Input Field URL (hidden on locked release builds)
+            if (!settingsLocked) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .onFocusChanged { isUrlInputFocused = it.isFocused },
-                    decorationBox = { inner ->
-                        if (inputUrl.isEmpty()) {
-                            Text(
-                                text = "http://192.168.x.x:5376/",
-                                color = NetflixLightGray,
-                                fontSize = 13.sp
-                            )
+                        .height(48.dp)
+                        .background(NetflixBlack, RoundedCornerShape(6.dp))
+                        .border(
+                            width = if (isUrlInputFocused) 2.dp else 1.dp,
+                            color = if (isUrlInputFocused) NetflixWhite else NetflixDarkCard,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    BasicTextField(
+                        value = inputUrl,
+                        onValueChange = {
+                            inputUrl = it
+                            saveMessage = null
+                            backendTestStatus = null
+                        },
+                        textStyle = TextStyle(
+                            color = NetflixWhite,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        cursorBrush = SolidColor(NetflixRed),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { isUrlInputFocused = it.isFocused },
+                        decorationBox = { inner ->
+                            if (inputUrl.isEmpty()) {
+                                Text(
+                                    text = "http://192.168.x.x:5376/",
+                                    color = NetflixLightGray,
+                                    fontSize = 13.sp
+                                )
+                            }
+                            inner()
                         }
-                        inner()
-                    }
-                )
+                    )
+                }
             }
 
             // Backend Actions
@@ -321,22 +332,24 @@ fun SettingsScreen(
                     }
                 }
 
-                Button(
-                    onClick = {
-                        inputUrl = BuildConfig.BACKEND_API_URL
-                        backendTestStatus = null
-                        saveMessage = null
-                    },
-                    colors = ButtonDefaults.colors(
-                        containerColor = NetflixBlack.copy(alpha = 0.5f),
-                        focusedContainerColor = NetflixWhite,
-                        contentColor = NetflixLightGray,
-                        focusedContentColor = NetflixBlack
-                    ),
-                    shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
-                    modifier = Modifier.height(38.dp)
-                ) {
-                    Text(text = stringResource(R.string.reset_default_url), fontSize = 12.sp)
+                if (!settingsLocked) {
+                    Button(
+                        onClick = {
+                            inputUrl = BuildConfig.BACKEND_API_URL
+                            backendTestStatus = null
+                            saveMessage = null
+                        },
+                        colors = ButtonDefaults.colors(
+                            containerColor = NetflixBlack.copy(alpha = 0.5f),
+                            focusedContainerColor = NetflixWhite,
+                            contentColor = NetflixLightGray,
+                            focusedContentColor = NetflixBlack
+                        ),
+                        shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
+                        modifier = Modifier.height(38.dp)
+                    ) {
+                        Text(text = stringResource(R.string.reset_default_url), fontSize = 12.sp)
+                    }
                 }
             }
 
@@ -391,57 +404,65 @@ fun SettingsScreen(
                 fontSize = 12.sp
             )
 
-            // Input Field API Key
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .background(NetflixBlack, RoundedCornerShape(6.dp))
-                    .border(
-                        width = if (isApiKeyInputFocused) 2.dp else 1.dp,
-                        color = if (isApiKeyInputFocused) NetflixWhite else NetflixDarkCard,
-                        shape = RoundedCornerShape(6.dp)
-                    )
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Key,
-                    contentDescription = null,
-                    tint = if (isApiKeyInputFocused) NetflixWhite else NetflixLightGray,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                BasicTextField(
-                    value = inputApiKey,
-                    onValueChange = {
-                        inputApiKey = it
-                        saveMessage = null
-                        subdlTestStatus = null
-                    },
-                    textStyle = TextStyle(
-                        color = NetflixWhite,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    cursorBrush = SolidColor(NetflixRed),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                    singleLine = true,
-                    visualTransformation = if (isApiKeyVisible) VisualTransformation.None else PasswordVisualTransformation('*'),
+            // Input Field API Key (hidden on locked release builds)
+            if (!settingsLocked) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .onFocusChanged { isApiKeyInputFocused = it.isFocused },
-                    decorationBox = { inner ->
-                        if (inputApiKey.isEmpty()) {
-                            Text(
-                                text = "subdl__your_api_key_here",
-                                color = NetflixLightGray,
-                                fontSize = 13.sp
-                            )
+                        .height(48.dp)
+                        .background(NetflixBlack, RoundedCornerShape(6.dp))
+                        .border(
+                            width = if (isApiKeyInputFocused) 2.dp else 1.dp,
+                            color = if (isApiKeyInputFocused) NetflixWhite else NetflixDarkCard,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Key,
+                        contentDescription = null,
+                        tint = if (isApiKeyInputFocused) NetflixWhite else NetflixLightGray,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    BasicTextField(
+                        value = inputApiKey,
+                        onValueChange = {
+                            inputApiKey = it
+                            saveMessage = null
+                            subdlTestStatus = null
+                        },
+                        textStyle = TextStyle(
+                            color = NetflixWhite,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        cursorBrush = SolidColor(NetflixRed),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                        singleLine = true,
+                        visualTransformation = if (isApiKeyVisible) VisualTransformation.None else PasswordVisualTransformation('*'),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { isApiKeyInputFocused = it.isFocused },
+                        decorationBox = { inner ->
+                            if (inputApiKey.isEmpty()) {
+                                Text(
+                                    text = "subdl__your_api_key_here",
+                                    color = NetflixLightGray,
+                                    fontSize = 13.sp
+                                )
+                            }
+                            inner()
                         }
-                        inner()
-                    }
+                    )
+                }
+            } else {
+                Text(
+                    text = context.getString(R.string.subdl_key_locked),
+                    color = NetflixLightGray,
+                    fontSize = 12.sp
                 )
             }
 
@@ -473,47 +494,51 @@ fun SettingsScreen(
                     }
                 }
 
-                Button(
-                    onClick = { isApiKeyVisible = !isApiKeyVisible },
-                    colors = ButtonDefaults.colors(
-                        containerColor = NetflixBlack.copy(alpha = 0.5f),
-                        focusedContainerColor = NetflixWhite,
-                        contentColor = NetflixLightGray,
-                        focusedContentColor = NetflixBlack
-                    ),
-                    shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
-                    modifier = Modifier.height(38.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = if (isApiKeyVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (isApiKeyVisible) "Sembunyikan" else "Tampilkan",
-                            fontSize = 12.sp
-                        )
+                if (!settingsLocked) {
+                    Button(
+                        onClick = { isApiKeyVisible = !isApiKeyVisible },
+                        colors = ButtonDefaults.colors(
+                            containerColor = NetflixBlack.copy(alpha = 0.5f),
+                            focusedContainerColor = NetflixWhite,
+                            contentColor = NetflixLightGray,
+                            focusedContentColor = NetflixBlack
+                        ),
+                        shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
+                        modifier = Modifier.height(38.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (isApiKeyVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isApiKeyVisible) "Sembunyikan" else "Tampilkan",
+                                fontSize = 12.sp
+                            )
+                        }
                     }
                 }
 
-                Button(
-                    onClick = {
-                        inputApiKey = SubdlRepository.DEFAULT_API_KEY
-                        subdlTestStatus = null
-                        saveMessage = null
-                    },
-                    colors = ButtonDefaults.colors(
-                        containerColor = NetflixBlack.copy(alpha = 0.5f),
-                        focusedContainerColor = NetflixWhite,
-                        contentColor = NetflixLightGray,
-                        focusedContentColor = NetflixBlack
-                    ),
-                    shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
-                    modifier = Modifier.height(38.dp)
-                ) {
-                    Text(text = stringResource(R.string.reset_default_key), fontSize = 12.sp)
+                if (!settingsLocked) {
+                    Button(
+                        onClick = {
+                            inputApiKey = SubdlRepository.DEFAULT_API_KEY
+                            subdlTestStatus = null
+                            saveMessage = null
+                        },
+                        colors = ButtonDefaults.colors(
+                            containerColor = NetflixBlack.copy(alpha = 0.5f),
+                            focusedContainerColor = NetflixWhite,
+                            contentColor = NetflixLightGray,
+                            focusedContentColor = NetflixBlack
+                        ),
+                        shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
+                        modifier = Modifier.height(38.dp)
+                    ) {
+                        Text(text = stringResource(R.string.reset_default_key), fontSize = 12.sp)
+                    }
                 }
             }
 
@@ -544,45 +569,53 @@ fun SettingsScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(top = 4.dp, bottom = 20.dp)
         ) {
-            Button(
-                onClick = {
-                    // Save Backend URL
-                    val formattedUrl = if (inputUrl.endsWith("/")) inputUrl else "$inputUrl/"
-                    ApiClient.setBaseUrl(formattedUrl)
-                    currentActiveUrl = ApiClient.getBaseUrl()
-                    inputUrl = currentActiveUrl
+            if (settingsLocked) {
+                Text(
+                    text = context.getString(R.string.settings_locked_notice),
+                    color = NetflixLightGray,
+                    fontSize = 13.sp
+                )
+            } else {
+                Button(
+                    onClick = {
+                        // Save Backend URL
+                        val formattedUrl = if (inputUrl.endsWith("/")) inputUrl else "$inputUrl/"
+                        ApiClient.setBaseUrl(formattedUrl)
+                        currentActiveUrl = ApiClient.getBaseUrl()
+                        inputUrl = currentActiveUrl
 
-                    // Save SubDL Key
-                    SubdlRepository.setApiKey(inputApiKey)
-                    currentActiveApiKey = SubdlRepository.getApiKey()
-                    inputApiKey = currentActiveApiKey
+                        // Save SubDL Key
+                        SubdlRepository.setApiKey(inputApiKey)
+                        currentActiveApiKey = SubdlRepository.getApiKey()
+                        inputApiKey = currentActiveApiKey
 
-                    saveMessage = context.getString(R.string.settings_saved_success)
-                },
-                colors = ButtonDefaults.colors(
-                    containerColor = NetflixRed,
-                    focusedContainerColor = Color(0xFFE50914).copy(alpha = 0.8f),
-                    contentColor = NetflixWhite,
-                    focusedContentColor = NetflixWhite
-                ),
-                shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
-                modifier = Modifier.height(46.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                        saveMessage = context.getString(R.string.settings_saved_success)
+                    },
+                    colors = ButtonDefaults.colors(
+                        containerColor = NetflixRed,
+                        focusedContainerColor = Color(0xFFE50914).copy(alpha = 0.8f),
+                        contentColor = NetflixWhite,
+                        focusedContentColor = NetflixWhite
+                    ),
+                    shape = ButtonDefaults.shape(RoundedCornerShape(6.dp)),
+                    modifier = Modifier.height(46.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.save_all_settings),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.save_all_settings),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
 

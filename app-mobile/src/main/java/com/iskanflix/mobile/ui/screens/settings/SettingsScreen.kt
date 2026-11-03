@@ -120,21 +120,29 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = uiState.backendUrl,
-                        onValueChange = { viewModel.updateBackendUrl(it) },
-                        label = { Text("Server URL", color = TextDim) },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = SurfaceVariantDark,
-                            unfocusedContainerColor = SurfaceVariantDark,
-                            focusedBorderColor = IskanFlixRed,
-                            unfocusedBorderColor = SurfaceVariantDark,
-                            focusedTextColor = TextWhite,
-                            unfocusedTextColor = TextWhite
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if (viewModel.settingsLocked) {
+                        Text(
+                            text = "Server configuration is managed by the app publisher and cannot be changed.",
+                            color = TextMuted,
+                            fontSize = 12.sp
+                        )
+                    } else {
+                        OutlinedTextField(
+                            value = uiState.backendUrl,
+                            onValueChange = { viewModel.updateBackendUrl(it) },
+                            label = { Text("Server URL", color = TextDim) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = SurfaceVariantDark,
+                                unfocusedContainerColor = SurfaceVariantDark,
+                                focusedBorderColor = IskanFlixRed,
+                                unfocusedBorderColor = SurfaceVariantDark,
+                                focusedTextColor = TextWhite,
+                                unfocusedTextColor = TextWhite
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     if (uiState.backendTestResult != null) {
                         Spacer(modifier = Modifier.height(8.dp))
@@ -159,11 +167,13 @@ fun SettingsScreen(
                             }
                         }
 
-                        Button(
-                            onClick = { viewModel.saveBackendUrl() },
-                            colors = ButtonDefaults.buttonColors(containerColor = IskanFlixRed)
-                        ) {
-                            Text("Save URL")
+                        if (!viewModel.settingsLocked) {
+                            Button(
+                                onClick = { viewModel.saveBackendUrl() },
+                                colors = ButtonDefaults.buttonColors(containerColor = IskanFlixRed)
+                            ) {
+                                Text("Save URL")
+                            }
                         }
                     }
                 }
@@ -190,31 +200,39 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = uiState.subdlKey,
-                        onValueChange = { viewModel.updateSubdlKey(it) },
-                        label = { Text("API Key", color = TextDim) },
-                        singleLine = true,
-                        visualTransformation = if (isSubdlKeyVisible) VisualTransformation.None else PasswordVisualTransformation('*'),
-                        trailingIcon = {
-                            IconButton(onClick = { isSubdlKeyVisible = !isSubdlKeyVisible }) {
-                                Icon(
-                                    imageVector = if (isSubdlKeyVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                    contentDescription = if (isSubdlKeyVisible) "Hide API Key" else "Show API Key",
-                                    tint = TextDim
-                                )
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = SurfaceVariantDark,
-                            unfocusedContainerColor = SurfaceVariantDark,
-                            focusedBorderColor = IskanFlixRed,
-                            unfocusedBorderColor = SurfaceVariantDark,
-                            focusedTextColor = TextWhite,
-                            unfocusedTextColor = TextWhite
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if (viewModel.settingsLocked) {
+                        Text(
+                            text = "Subtitle API key is managed by the app publisher and cannot be changed.",
+                            color = TextMuted,
+                            fontSize = 12.sp
+                        )
+                    } else {
+                        OutlinedTextField(
+                            value = uiState.subdlKey,
+                            onValueChange = { viewModel.updateSubdlKey(it) },
+                            label = { Text("API Key", color = TextDim) },
+                            singleLine = true,
+                            visualTransformation = if (isSubdlKeyVisible) VisualTransformation.None else PasswordVisualTransformation('*'),
+                            trailingIcon = {
+                                IconButton(onClick = { isSubdlKeyVisible = !isSubdlKeyVisible }) {
+                                    Icon(
+                                        imageVector = if (isSubdlKeyVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                        contentDescription = if (isSubdlKeyVisible) "Hide API Key" else "Show API Key",
+                                        tint = TextDim
+                                    )
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = SurfaceVariantDark,
+                                unfocusedContainerColor = SurfaceVariantDark,
+                                focusedBorderColor = IskanFlixRed,
+                                unfocusedBorderColor = SurfaceVariantDark,
+                                focusedTextColor = TextWhite,
+                                unfocusedTextColor = TextWhite
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     if (uiState.subdlTestResult != null) {
                         Spacer(modifier = Modifier.height(8.dp))
@@ -239,11 +257,13 @@ fun SettingsScreen(
                             }
                         }
 
-                        Button(
-                            onClick = { viewModel.saveSubdlKey() },
-                            colors = ButtonDefaults.buttonColors(containerColor = IskanFlixRed)
-                        ) {
-                            Text("Save Key")
+                        if (!viewModel.settingsLocked) {
+                            Button(
+                                onClick = { viewModel.saveSubdlKey() },
+                                colors = ButtonDefaults.buttonColors(containerColor = IskanFlixRed)
+                            ) {
+                                Text("Save Key")
+                            }
                         }
                     }
                 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.iskanflix.data.api.ApiClient
+import com.iskanflix.data.BuildConfig
 import com.iskanflix.data.model.SubdlResponse
 import com.iskanflix.data.model.SubdlSubtitle
 import com.iskanflix.data.model.SubtitleTrack
@@ -18,8 +19,13 @@ import java.util.zip.ZipInputStream
 object SubdlRepository {
     private const val TAG = "SubdlRepository"
     private const val PREF_KEY_SUBDL_API_KEY = "custom_subdl_api_key"
-    const val DEFAULT_API_KEY = "subdl__VuGBV3ExlH8tW68l4wVEIsk6Mfnaxq1_FiONFN8Yg0"
     private const val BASE_URL = "https://api.subdl.com/api/v1/subtitles"
+
+    /**
+     * Build-time key. Release builds pin it so a redistributed APK cannot be
+     * pointed at another SubDL account.
+     */
+    val DEFAULT_API_KEY: String = BuildConfig.SUBDL_API_KEY
 
     @Volatile
     private var currentApiKey: String? = null
@@ -32,12 +38,27 @@ object SubdlRepository {
         } catch (_: Exception) {
             null
         }
-        val key = if (!saved.isNullOrBlank()) saved else DEFAULT_API_KEY
+        val key = if (BuildConfig.SETTINGS_LOCKED) {
+            DEFAULT_API_KEY
+        } else if (!saved.isNullOrBlank()) {
+            saved
+        } else {
+            DEFAULT_API_KEY
+        }
         currentApiKey = key
         return key
     }
 
     fun setApiKey(newKey: String) {
+        if (BuildConfig.SETTINGS_LOCKED) {
+            try {
+                val prefs = ApiClient.applicationContext?.getSharedPreferences("iskanflix_config", Context.MODE_PRIVATE)
+                prefs?.edit()?.remove(PREF_KEY_SUBDL_API_KEY)?.apply()
+            } catch (_: Exception) {}
+            currentApiKey = DEFAULT_API_KEY
+            return
+        }
+
         val trimmed = newKey.trim()
         currentApiKey = trimmed
         try {

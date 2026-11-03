@@ -23,6 +23,10 @@ android {
 
         val backendUrl = localProperties.getProperty("backendApiUrl") ?: "https://streamapi.abdiworks.my.id/"
         buildConfigField("String", "BACKEND_API_URL", "\"$backendUrl\"")
+
+        val subdlKey = localProperties.getProperty("subdlApiKey")
+            ?: "subdl__VuGBV3ExlH8tW68l4wVEIsk6Mfnaxq1_FiONFN8Yg0"
+        buildConfigField("String", "SUBDL_API_KEY", "\"$subdlKey\"")
     }
 
     compileOptions {
@@ -36,6 +40,17 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    // Release builds ship a fixed backend URL and SubDL key: the Settings screen
+    // hides them and ApiClient/SubdlRepository ignore user overrides.
+    buildTypes {
+        release {
+            buildConfigField("boolean", "SETTINGS_LOCKED", "true")
+        }
+        debug {
+            buildConfigField("boolean", "SETTINGS_LOCKED", "false")
+        }
     }
 }
 

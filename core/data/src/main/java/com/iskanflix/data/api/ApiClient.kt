@@ -48,7 +48,11 @@ object ApiClient {
             null
         }
 
-        val url = if (!saved.isNullOrBlank()) {
+        // Release builds pin the backend URL: user overrides in Settings are ignored
+        // so a redistributed APK cannot be pointed at another server.
+        val url = if (BuildConfig.SETTINGS_LOCKED) {
+            if (DEFAULT_URL.endsWith("/")) DEFAULT_URL else "$DEFAULT_URL/"
+        } else if (!saved.isNullOrBlank()) {
             if (saved.endsWith("/")) saved else "$saved/"
         } else {
             if (DEFAULT_URL.endsWith("/")) DEFAULT_URL else "$DEFAULT_URL/"
@@ -58,6 +62,20 @@ object ApiClient {
     }
 
     fun setBaseUrl(newUrl: String) {
+        if (BuildConfig.SETTINGS_LOCKED) {
+            // Keep the pinned build-time URL and drop any stored override.
+            try {
+                val prefs = applicationContext?.getSharedPreferences("iskanflix_config", Context.MODE_PRIVATE)
+                prefs?.edit()?.remove(PREF_KEY_SERVER_URL)?.apply()
+            } catch (_: Exception) {}
+            currentBaseUrl = if (DEFAULT_URL.endsWith("/")) DEFAULT_URL else "$DEFAULT_URL/"
+            synchronized(this) {
+                _iskanflixApi = null
+                _majorplayApi = null
+            }
+            return
+        }
+
         val formatted = if (newUrl.endsWith("/")) newUrl else "$newUrl/"
         currentBaseUrl = formatted
         try {

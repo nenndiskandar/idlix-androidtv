@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import coil.disk.DiskCache
 import com.iskanflix.data.api.ApiClient
+import com.iskanflix.data.BuildConfig
 import com.iskanflix.data.repository.IskanFlixRepository
 import com.iskanflix.data.repository.SubdlRepository
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,12 @@ class SettingsViewModel(
 
     private val repository = IskanFlixRepository()
 
+    /**
+     * Release builds pin the backend URL and SubDL key. The Settings screen hides
+     * the editable fields and the repository ignores stored overrides.
+     */
+    val settingsLocked: Boolean = BuildConfig.SETTINGS_LOCKED
+
     private val _uiState = MutableStateFlow(
         SettingsUiState(
             backendUrl = ApiClient.getBaseUrl(),
@@ -40,18 +47,22 @@ class SettingsViewModel(
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     fun updateBackendUrl(url: String) {
+        if (settingsLocked) return
         _uiState.value = _uiState.value.copy(backendUrl = url, backendTestResult = null)
     }
 
     fun updateSubdlKey(key: String) {
+        if (settingsLocked) return
         _uiState.value = _uiState.value.copy(subdlKey = key, subdlTestResult = null)
     }
 
     fun saveBackendUrl() {
+        if (settingsLocked) return
         ApiClient.setBaseUrl(_uiState.value.backendUrl)
     }
 
     fun saveSubdlKey() {
+        if (settingsLocked) return
         SubdlRepository.setApiKey(_uiState.value.subdlKey)
     }
 
